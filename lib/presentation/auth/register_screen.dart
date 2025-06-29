@@ -43,6 +43,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       body: SingleChildScrollView(
         child: Form(
           key: _key,
@@ -51,7 +52,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const SpaceHeight(100),
+                const SpaceHeight(80),
+                // Tambahan gambar di sini
+                Image.asset(
+                  'assets/images/logo1.png', // Ganti dengan path gambar Anda
+                  width: 200,
+                  height: 200,
+                ),
+                const SpaceHeight(10),
                 Text(
                   'DAFTAR AKUN BARU',
                   style: TextStyle(

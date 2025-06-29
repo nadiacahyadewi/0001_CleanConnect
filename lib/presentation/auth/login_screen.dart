@@ -1,4 +1,3 @@
-
 import 'package:cleanconnect/core/components/custom_text_field.dart';
 import 'package:cleanconnect/core/components/spaces.dart';
 import 'package:cleanconnect/core/constants/colors.dart';
@@ -6,7 +5,7 @@ import 'package:cleanconnect/core/core.dart';
 import 'package:cleanconnect/data/model/request/auth/login_request_model.dart';
 import 'package:cleanconnect/presentation/auth/bloc/login/login_bloc.dart';
 import 'package:cleanconnect/presentation/auth/register_screen.dart';
-// import 'package:cleanconnect/presentation/customer/profile/customer_profile_screen.dart';
+import 'package:cleanconnect/presentation/customer/profile/customer_profile_screen.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -43,6 +42,7 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       body: SingleChildScrollView(
         child: Form(
           key: _key,
@@ -51,9 +51,16 @@ class _LoginScreenState extends State<LoginScreen> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const SpaceHeight(170),
+                const SpaceHeight(80),
+                // Tambahan gambar di sini
+                Image.asset(
+                  'assets/images/logo1.png', // Ganti dengan path gambar Anda
+                  width: 200,
+                  height: 200,
+                ),
+                const SpaceHeight(10),
                 Text(
-                  'SELAMAT DATANG KEMBALI',
+                  'SELAMAT DATANG !',
                   style: TextStyle(
                     fontSize: MediaQuery.of(context).size.width * 0.05,
                     fontWeight: FontWeight.bold,
@@ -110,10 +117,10 @@ class _LoginScreenState extends State<LoginScreen> {
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(content: Text(state.responseModel.message!)),
                         );
-                        // context.pushAndRemoveUntil(
-                        //   const CustomerProfileScreen(),
-                        //   (route) => false,
-                        // );
+                        context.pushAndRemoveUntil(
+                          const BuyerProfileScreen(),
+                          (route) => false,
+                        );
                       } else {
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(content: Text('Role tidak dikenali')),
@@ -137,6 +144,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               }
                             },
                       label: state is LogInLoading ? 'Memuat...' : 'Masuk',
+                      
                     );
                   },
                 ),

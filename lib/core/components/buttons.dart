@@ -9,7 +9,7 @@ class Button extends StatelessWidget {
     required this.onPressed,
     required this.label,
     this.style = ButtonStyleType.filled,
-    this.color = AppColors.primary,
+    this.color = const Color.fromARGB(255, 0, 109, 34),
     this.textColor = Colors.white,
     this.width = double.infinity,
     this.height = 60.0,
