@@ -1,5 +1,8 @@
 import 'package:cleanconnect/data/repository/auth_repository.dart';
+import 'package:cleanconnect/data/repository/profile_admin_repository.dart';
 import 'package:cleanconnect/data/repository/profile_customer_repository.dart';
+import 'package:cleanconnect/presentation/admin/profile/bloc/add_profile/add_profile_bloc.dart';
+import 'package:cleanconnect/presentation/admin/profile/bloc/get_profile/get_profile_bloc.dart';
 import 'package:cleanconnect/presentation/auth/bloc/login/login_bloc.dart';
 import 'package:cleanconnect/presentation/auth/bloc/register/register_bloc.dart';
 import 'package:cleanconnect/presentation/auth/login_screen.dart';
@@ -30,6 +33,18 @@ class MyApp extends StatelessWidget {
           create: (context) => ProfileBuyerBloc(
             profileBuyerRepository: ProfileBuyerRepository(ServiceHttpClient()),
           ),
+        ),
+        BlocProvider(
+          create: (context) =>
+              AddProfileBloc(PrifileAdminRepository(ServiceHttpClient())),
+        ),
+        BlocProvider(
+          create: (context) =>
+              GetProfileBloc(PrifileAdminRepository(ServiceHttpClient())),
+        ),
+        BlocProvider(
+          create: (context) =>
+              GetProfileBloc(PrifileAdminRepository(ServiceHttpClient())),
         ),
       ],
       child: MaterialApp(
