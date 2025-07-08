@@ -1,5 +1,6 @@
 import 'package:cleanconnect/core/constants/colors.dart';
 import 'package:cleanconnect/presentation/admin/home/admin_home_screen.dart';
+import 'package:cleanconnect/presentation/admin/home/pemesanan_screen.dart';
 import 'package:flutter/material.dart';
 
 class AdminMainPage extends StatefulWidget {
@@ -13,7 +14,7 @@ class _AdminMainPageState extends State<AdminMainPage> {
   int _selectedIndex = 0;
   final _widgets = [
     const AdminHomeScreen(),
-    // const IndukCanaryScreen(),
+    const PemesananCustomerScreen(),
     // const AnakCanaryScreen(),
     // const PostingScreen(),
   ];
@@ -74,21 +75,21 @@ class _AdminMainPageState extends State<AdminMainPage> {
                 ),
                 BottomNavigationBarItem(
                   icon: Icon(
-                    Icons.post_add,
+                    Icons.history,
                     color: _selectedIndex == 2
                         ? AppColors.lightSheet
                         : AppColors.grey,
                   ),
-                  label: 'Layanan',
+                  label: 'History',
                 ),
                 BottomNavigationBarItem(
                   icon: Icon(
-                    Icons.logout,
+                    Icons.person,
                     color: _selectedIndex == 3
                         ? AppColors.lightSheet
                         : AppColors.grey,
                   ),
-                  label: 'Logout',
+                  label: 'Profil',
                 ),
               ],
             ),
