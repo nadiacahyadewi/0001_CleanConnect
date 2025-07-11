@@ -1,5 +1,8 @@
 import 'package:cleanconnect/core/constants/colors.dart';
 import 'package:cleanconnect/presentation/customer/home/customer_home_screen.dart';
+import 'package:cleanconnect/presentation/customer/home/riwayat_home_screen.dart';
+import 'package:cleanconnect/presentation/customer/pemesanan/pemesanan_screen.dart';
+import 'package:cleanconnect/presentation/customer/profile/customer_profile_screen.dart';
 import 'package:flutter/material.dart';
 
 class CustomerMainPage extends StatefulWidget {
@@ -13,9 +16,9 @@ class _CustomerMainPageState extends State<CustomerMainPage> {
   int _selectedIndex = 0;
   final _widgets = [
     const CustomerHomeScreen(),
-    // const IndukCanaryScreen(),
-    // const AnakCanaryScreen(),
-    // const PostingScreen(),
+    const PemesananCustomerScreen(),
+    const RiwayatPemesananCustomerScreen(),
+    const BuyerProfileScreen(),
   ];
   @override
   Widget build(BuildContext context) {
@@ -23,7 +26,7 @@ class _CustomerMainPageState extends State<CustomerMainPage> {
       body: IndexedStack(index: _selectedIndex, children: _widgets),
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
-          borderRadius: const BorderRadius.vertical(top: Radius.circular(20.0)),
+          //borderRadius: const BorderRadius.vertical(top: Radius.circular(20.0)),
           boxShadow: [
             BoxShadow(
               color: Colors.black.withOpacity(0.1),
@@ -35,7 +38,7 @@ class _CustomerMainPageState extends State<CustomerMainPage> {
           ],
         ),
         child: ClipRRect(
-          borderRadius: const BorderRadius.vertical(top: Radius.circular(20.0)),
+          //borderRadius: const BorderRadius.vertical(top: Radius.circular(20.0)),
           child: Theme(
             data: ThemeData(
               splashColor: Colors.transparent,
@@ -79,16 +82,16 @@ class _CustomerMainPageState extends State<CustomerMainPage> {
                         ? AppColors.lightSheet
                         : AppColors.grey,
                   ),
-                  label: 'Layanan',
+                  label: 'Riwayat',
                 ),
                 BottomNavigationBarItem(
                   icon: Icon(
-                    Icons.logout,
+                    Icons.person_3,
                     color: _selectedIndex == 3
                         ? AppColors.lightSheet
                         : AppColors.grey,
                   ),
-                  label: 'Logout',
+                  label: 'Profile',
                 ),
               ],
             ),

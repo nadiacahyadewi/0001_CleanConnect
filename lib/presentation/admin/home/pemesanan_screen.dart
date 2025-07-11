@@ -147,7 +147,17 @@ class _PemesananCustomerScreenState extends State<PemesananCustomerScreen> {
                       ),
                     );
                   } else if (state is PemesananCustomerSuccessState) {
-                    final data = state.responseModel.data;
+                    final allData = state.responseModel.data;
+                    
+                    // Filter data - hanya tampilkan yang bukan selesai/ditolak
+                    final data = allData.where((pemesanan) {
+                      final status = pemesanan.status.toLowerCase();
+                      return status != 'selesai' && 
+                             status != 'completed' && 
+                             status != 'ditolak' && 
+                             status != 'rejected';
+                    }).toList();
+                    
                     if (data.isEmpty) {
                       return Container(
                         height: MediaQuery.of(context).size.height * 0.6,
@@ -162,7 +172,7 @@ class _PemesananCustomerScreenState extends State<PemesananCustomerScreen> {
                               ),
                               const SpaceHeight(16),
                               Text(
-                                'Belum Ada Pemesanan',
+                                'Belum Ada Pemesanan Aktif',
                                 style: TextStyle(
                                   fontSize: 18,
                                   fontWeight: FontWeight.bold,
@@ -220,7 +230,7 @@ class _PemesananCustomerScreenState extends State<PemesananCustomerScreen> {
                                 borderRadius: BorderRadius.circular(20),
                               ),
                               child: Text(
-                                '${data.length} pesanan',
+                                '${data.length} pesanan aktif',
                                 style: TextStyle(
                                   fontSize: 12,
                                   fontWeight: FontWeight.w600,
