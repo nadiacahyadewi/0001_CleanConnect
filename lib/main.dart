@@ -1,4 +1,5 @@
 import 'package:cleanconnect/data/repository/auth_repository.dart';
+import 'package:cleanconnect/data/repository/pemesanan_repository.dart';
 import 'package:cleanconnect/data/repository/profile_admin_repository.dart';
 import 'package:cleanconnect/data/repository/profile_customer_repository.dart';
 import 'package:cleanconnect/presentation/admin/profile/bloc/add_profile/add_profile_bloc.dart';
@@ -6,10 +7,12 @@ import 'package:cleanconnect/presentation/admin/profile/bloc/get_profile/get_pro
 import 'package:cleanconnect/presentation/auth/bloc/login/login_bloc.dart';
 import 'package:cleanconnect/presentation/auth/bloc/register/register_bloc.dart';
 import 'package:cleanconnect/presentation/auth/login_screen.dart';
+import 'package:cleanconnect/presentation/customer/pemesanan/bloc/pemesanan_customer_bloc.dart';
 import 'package:cleanconnect/presentation/customer/profile/bloc/profile_customer_bloc.dart';
 import 'package:cleanconnect/services/service_http_client.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+
 void main() {
   runApp(const MyApp());
 }
@@ -46,6 +49,11 @@ class MyApp extends StatelessWidget {
           create: (context) =>
               GetProfileBloc(PrifileAdminRepository(ServiceHttpClient())),
         ),
+        BlocProvider(
+          create: (context) => PemesananCustomerBloc(
+            PemesananCustomerRepository(ServiceHttpClient()),
+          ),
+        ),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
@@ -58,4 +66,3 @@ class MyApp extends StatelessWidget {
     );
   }
 }
-

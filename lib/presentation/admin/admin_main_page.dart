@@ -1,6 +1,9 @@
 import 'package:cleanconnect/core/constants/colors.dart';
+import 'package:cleanconnect/core/core.dart';
 import 'package:cleanconnect/presentation/admin/home/admin_home_screen.dart';
 import 'package:cleanconnect/presentation/admin/home/pemesanan_screen.dart';
+import 'package:cleanconnect/presentation/customer/home/riwayat_home_screen.dart';
+import 'package:cleanconnect/presentation/auth/login_screen.dart';
 import 'package:flutter/material.dart';
 
 class AdminMainPage extends StatefulWidget {
@@ -15,9 +18,52 @@ class _AdminMainPageState extends State<AdminMainPage> {
   final _widgets = [
     const AdminHomeScreen(),
     const PemesananCustomerScreen(),
-    // const AnakCanaryScreen(),
-    // const PostingScreen(),
+    const RiwayatPemesananCustomerScreen(),
   ];
+
+  void _handleNavigation(int index) {
+    if (index == 3) {
+      // Index 3 adalah logout
+      _showLogoutDialog();
+    } else {
+      setState(() {
+        _selectedIndex = index;
+      });
+    }
+  }
+
+  void _showLogoutDialog() {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Konfirmasi Logout'),
+          content: const Text('Apakah Anda yakin ingin logout?'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text('Batal'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Tutup dialog dulu
+                // Logika untuk logout
+                context.pushAndRemoveUntil(
+                  const LoginScreen(),
+                  (_) => false,
+                );
+              },
+              child: const Text(
+                'Logout',
+                style: TextStyle(color: Colors.red),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -46,9 +92,7 @@ class _AdminMainPageState extends State<AdminMainPage> {
               backgroundColor: const Color.fromARGB(255, 0, 109, 34),
               useLegacyColorScheme: false,
               currentIndex: _selectedIndex,
-              onTap: (value) => setState(() {
-                _selectedIndex = value;
-              }),
+              onTap: _handleNavigation, // Gunakan custom handler
               type: BottomNavigationBarType.fixed,
               selectedLabelStyle: const TextStyle(color: AppColors.lightSheet),
               selectedIconTheme: const IconThemeData(color: AppColors.lightSheet),
@@ -84,12 +128,10 @@ class _AdminMainPageState extends State<AdminMainPage> {
                 ),
                 BottomNavigationBarItem(
                   icon: Icon(
-                    Icons.person,
-                    color: _selectedIndex == 3
-                        ? AppColors.lightSheet
-                        : AppColors.grey,
+                    Icons.logout,
+                    color: AppColors.grey, // Selalu grey karena bukan navigasi biasa
                   ),
-                  label: 'Profil',
+                  label: 'Logout',
                 ),
               ],
             ),
