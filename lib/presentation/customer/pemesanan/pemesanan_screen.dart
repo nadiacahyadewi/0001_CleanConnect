@@ -57,7 +57,17 @@ class _PemesananCustomerScreenState extends State<PemesananCustomerScreen> {
                 } else if (state is PemesananCustomerErrorState) {
                   return Center(child: Text(state.errorMessage));
                 } else if (state is PemesananCustomerSuccessState) {
-                  final data = state.responseModel.data;
+                  final allData = state.responseModel.data;
+                  
+                  // Filter data - hanya tampilkan yang bukan selesai/ditolak
+                  final data = allData.where((pemesanan) {
+                    final status = pemesanan.status.toLowerCase();
+                    return status != 'selesai' && 
+                           status != 'completed' && 
+                           status != 'ditolak' && 
+                           status != 'rejected';
+                  }).toList();
+                  
                   if (data.isEmpty) {
                     return const Center(
                       child: Text('Tidak ada data pemesanan'),

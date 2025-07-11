@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:cleanconnect/core/components/custom_text_field.dart';
 import 'package:cleanconnect/core/components/spaces.dart';
 import 'package:cleanconnect/core/constants/colors.dart';
@@ -7,9 +8,13 @@ import 'package:cleanconnect/presentation/customer/customer_main_page.dart';
 import 'package:cleanconnect/presentation/customer/pemesanan/bloc/pemesanan_customer_bloc.dart';
 import 'package:cleanconnect/presentation/customer/pemesanan/maps.dart';
 import 'package:cleanconnect/presentation/customer/pemesanan/pemesanan_screen.dart';
+import 'package:cleanconnect/presentation/customer/camera/native_camera.dart';
+import 'package:cleanconnect/presentation/customer/camera/storage_helper.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:image_picker/image_picker.dart';
 
 class PemesananFormPage extends StatefulWidget {
   const PemesananFormPage({super.key});
@@ -40,6 +45,7 @@ class _PemesananFormPageState extends State<PemesananFormPage> {
 
   String? selectedLayanan;
   String? selectedAddress; // Untuk menyimpan alamat dari map
+  File? _imageFile; // Untuk menyimpan gambar
 
   @override
   void initState() {
@@ -108,6 +114,183 @@ class _PemesananFormPageState extends State<PemesananFormPage> {
         ),
       );
     }
+  }
+
+  // Method untuk request permission
+  Future<void> _requestPermissions() async {
+    await [
+      Permission.camera,
+      Permission.storage,
+      Permission.manageExternalStorage,
+    ].request();
+  }
+
+  // Method untuk mengambil foto dengan kamera
+  Future<void> _takePicture() async {
+    await _requestPermissions();
+    final result = await Navigator.push<File?>(
+      context,
+      MaterialPageRoute(builder: (_) => const CameraPage()),
+    );
+    if (result != null) {
+      final saved = await StorageHelper.saveImage(result, 'camera');
+      setState(() => _imageFile = saved);
+      _showSnackBar('Foto berhasil disimpan!', Colors.green);
+    }
+  }
+
+  // Method untuk memilih dari galeri
+  Future<void> _pickFromGallery() async {
+    final picker = ImagePicker();
+    final picked = await picker.pickImage(source: ImageSource.gallery);
+    if (picked != null) {
+      final saved = await StorageHelper.saveImage(File(picked.path), 'gallery');
+      setState(() => _imageFile = saved);
+      _showSnackBar('Gambar berhasil dipilih!', Colors.green);
+    }
+  }
+
+  // Method untuk menghapus gambar
+  void _deleteImage() async {
+    await _imageFile?.delete();
+    setState(() => _imageFile = null);
+    _showSnackBar('Gambar berhasil dihapus', Colors.red);
+  }
+
+  // Method untuk menampilkan snackbar
+  void _showSnackBar(String message, Color color) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: color,
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+      ),
+    );
+  }
+
+  // Widget untuk tombol aksi gambar
+  Widget _buildImageActionButton(
+    IconData icon,
+    String label,
+    Color color,
+    VoidCallback onPressed,
+  ) {
+    return Container(
+      height: 80,
+      decoration: BoxDecoration(
+        gradient: LinearGradient(colors: [color, color.withOpacity(0.8)]),
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: color.withOpacity(0.3),
+            blurRadius: 6,
+            offset: const Offset(0, 3),
+          ),
+        ],
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(12),
+          onTap: onPressed,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(icon, size: 24, color: Colors.white),
+              const SizedBox(height: 4),
+              Text(
+                label,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  // Widget untuk preview gambar
+  Widget _buildImagePreview() {
+    return Container(
+      height: 200,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.1),
+            blurRadius: 8,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(12),
+        child: Stack(
+          children: [
+            Image.file(
+              _imageFile!,
+              width: double.infinity,
+              height: double.infinity,
+              fit: BoxFit.cover,
+            ),
+            Positioned(
+              top: 8,
+              right: 8,
+              child: CircleAvatar(
+                backgroundColor: Colors.black54,
+                radius: 16,
+                child: IconButton(
+                  icon: const Icon(
+                    Icons.close,
+                    color: Colors.white,
+                    size: 16,
+                  ),
+                  onPressed: _deleteImage,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // Widget untuk empty state gambar
+  Widget _buildImageEmptyState() {
+    return Container(
+      height: 120,
+      decoration: BoxDecoration(
+        color: Colors.grey.shade50,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.grey.shade300, width: 2),
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(Icons.photo_camera_outlined, size: 40, color: Colors.grey.shade400),
+          const SizedBox(height: 8),
+          Text(
+            'Belum ada gambar',
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
+              color: Colors.grey.shade600,
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            'Ambil foto atau pilih dari galeri',
+            style: TextStyle(fontSize: 12, color: Colors.grey.shade500),
+            textAlign: TextAlign.center,
+          ),
+        ],
+      ),
+    );
   }
 
   @override
@@ -271,6 +454,73 @@ class _PemesananFormPageState extends State<PemesananFormPage> {
                 ],
                 
                 const SpaceHeight(16),
+                
+                // Section untuk Upload Gambar
+                Text(
+                  'Gambar Lokasi (Opsional)',
+                  style: TextStyle(
+                    fontSize: MediaQuery.of(context).size.width * 0.03,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                const SpaceHeight(8),
+                
+                // Tombol untuk kamera dan galeri
+                Row(
+                  children: [
+                    Expanded(
+                      child: _buildImageActionButton(
+                        Icons.camera_alt,
+                        'Ambil Foto',
+                        Colors.blue.shade600,
+                        _takePicture,
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: _buildImageActionButton(
+                        Icons.photo_library,
+                        'Pilih Galeri',
+                        Colors.purple.shade600,
+                        _pickFromGallery,
+                      ),
+                    ),
+                  ],
+                ),
+                const SpaceHeight(16),
+                
+                // Preview gambar atau empty state
+                _imageFile != null ? _buildImagePreview() : _buildImageEmptyState(),
+                
+                // Status gambar
+                if (_imageFile != null) ...[
+                  const SpaceHeight(8),
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: Colors.green.shade50,
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(color: Colors.green.shade200),
+                    ),
+                    child: Row(
+                      children: [
+                        Icon(Icons.check_circle, 
+                             color: Colors.green.shade600, size: 18),
+                        const SizedBox(width: 8),
+                        Text(
+                          'Gambar berhasil disimpan',
+                          style: TextStyle(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w500,
+                            color: Colors.green.shade700,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+                
+                const SpaceHeight(16),
                 Text(
                   'Jenis Layanan',
                   style: TextStyle(
@@ -400,9 +650,9 @@ class _PemesananFormPageState extends State<PemesananFormPage> {
                 const SpaceHeight(16),
                 CustomTextField(
                   controller: deskripsiController,
-                  label: 'Deskripsi Tambahan (Opsional)',
+                  label: 'Deskripsi Tambahan',
                   maxLines: 3,
-                  validator: '',
+                  validator: 'Deskripsi Tidak Boleh Kosong',
                 ),
                 const SpaceHeight(32),
                 BlocConsumer<PemesananCustomerBloc, PemesananCustomerState>(
@@ -467,6 +717,8 @@ class _PemesananFormPageState extends State<PemesananFormPage> {
                                   harga: hargaController.text,
                                   tanggalPesan: DateTime.parse(tanggalPesanController.text),
                                   jam: jamController.text,
+                                  // Tambahkan gambar jika ada
+                                  // gambar: _imageFile?.path, // Uncomment jika model mendukung gambar
                                 );
 
                                 context.read<PemesananCustomerBloc>().add(
